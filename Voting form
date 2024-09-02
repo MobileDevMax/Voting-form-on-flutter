@@ -1,0 +1,89 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const VotingApp());
+}
+
+class VotingApp extends StatelessWidget {
+  const VotingApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Voting',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const VotingScreen(),
+    );
+  }
+}
+
+class VotingScreen extends StatefulWidget {
+  const VotingScreen({Key? key}) : super(key: key);
+
+  @override
+  _VotingScreenState createState() => _VotingScreenState();
+}
+
+class _VotingScreenState extends State<VotingScreen> {
+  final List<String> options = ["Option 1", "Option 2", "Option 3"];
+  List<int> votes = [0, 0, 0];
+  int? selectedOption;
+
+  void _vote() {
+    if (selectedOption != null) {
+      setState(() {
+        votes[selectedOption!] += 1;
+        selectedOption = null; // Reset selection after voting
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Your vote has been counted!')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Voting form'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            const Text(
+              'Select an option:',
+              style: TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 20),
+            for (int i = 0; i < options.length; i++)
+              RadioListTile<int>(
+                title: Text(options[i]),
+                value: i,
+                groupValue: selectedOption,
+                onChanged: (int? value) {
+                  setState(() {
+                    selectedOption = value;
+                  });
+                },
+              ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _vote,
+              child: const Text('Vote'),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Results:',
+              style: TextStyle(fontSize: 18),
+            ),
+            for (int i = 0; i < votes.length; i++)
+              Text('${options[i]}: ${votes[i]} votes'),
+          ],
+        ),
+      ),
+    );
+  }
+}
